@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+
+  db:
+  #ref: https://neo4j.com/developer/docker-run-neo4j/
+    image: neo4j:latest
+    ports:
+      - "7474:7474" # http
+      - "7473:7473" # https
+      - "7687:7687" # Bolt
+    environment:
+      - NEO4J_AUTH=neo4j/test
+    volumes:
+      - ./docker/neo4j-data:/data/dbms
+      - ./docker/neo4j-conf:/conf
+
+  flask:
+    image: webapp-flask
+    build:
+      context: .
+      dockerfile: ./docker/python-flask/Dockerfile
+    volumes:
+      - ./app:/app
+    ports:
+      - "5000:5000"
+    depends_on: 
+      - db
+
